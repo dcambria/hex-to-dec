@@ -68,8 +68,15 @@ do
 
         -n ) export NOHEX=1   ;;
         -b ) export ONEBITE=1 ;; 
-         * ) export HEX=$@
-             break ;;
+         * ) if ! [[ "$@" =~ [^a-fA-F0-9\ ] ]]
+             then
+                 export HEX=$@
+                 break 
+             else
+                 echo "Valor inválido. Confira o número hexadecimal ou a sintaxe do programa."
+                 exit 1
+             fi
+             ;;
     esac
 
     shift
