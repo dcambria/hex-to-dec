@@ -18,6 +18,7 @@
 # -------
 #
 # VERSÃO 1.0: Leitura de vários blocos de 1 byte separados por espaços (-b) e números maiores longos sem espaços.
+# VERSÃO 1.1: Incorpora supressão de saída hexadecimal
 #
 # TODO: 
 #
@@ -25,33 +26,62 @@
 #
 
 hextodec(){
-    HEXDEC=$(echo $@ | tr '[:lower:]' '[:upper:]' | sed "s/ //g")
-    echo -en "\033[1;4;31m$HEXDEC \033[0m"
-    DEC=$(bc <<< "ibase=16;$HEXDEC")
+    NORMALIZE=$(echo $@ | tr '[:lower:]' '[:upper:]' | sed "s/ //g")
+
+    if [[ $NOHEX != 1 ]]
+    then
+        echo -en "\033[1;4;31m$NORMALIZE \033[0m"
+    fi
+
+    DEC=$(bc <<< "ibase=16;$NORMALIZE")
     printf '\033[4;41m%3d\033[0m' $DEC
 }
+
+banner() {
+    echo "hextodec.sh"
+    echo "-----------" 
+    echo ""
+    echo "Converte números hexadecimais em decimais."
+    echo ""
+    echo ""
+    echo "USO:"
+    echo "----"
+    echo ""
+    echo "Digite um valor hexadecimal ou:"
+    echo ""
+    echo "- Use -b para leitura de bytes separados por espaços. Ex. FF FF FF"
+    echo "- Use -n para exibir somente o resultado decimal."
+} 
 
 echo ""
 
 if [[ $# -eq 0 ]] 
 then
-    echo "Digite um valor hexadecimal ou"
-    echo "Use -b para leitura de bytes separados por espaços. Ex. FF FF FF"
+    banner
     exit 0
 fi
 
-if [ $1 == "-b" ]
 
-then   
+while test -n "$1"
+do
+    case "$1" in
+
+        -n ) export NOHEX=1   ;;
+        -b ) export ONEBITE=1 ;; 
+         * ) export HEX=$@
+             break ;;
+    esac
+
     shift
-    HEX="$@"
+done
+
+if [[ $ONEBITE == 1 ]]
+then
     for i in $HEX                    
     do
        hextodec $i
        echo -n " "
-    done  
+    done
 else
-    HEX="$@"
-    hextodec $HEX
-
+   hextodec $HEX 
 fi
