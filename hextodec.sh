@@ -19,6 +19,7 @@
 #
 # VERSÃO 1.0: Leitura de vários blocos de 1 byte separados por espaços (-b) e números maiores longos sem espaços.
 # VERSÃO 1.1: Incorpora supressão de saída hexadecimal
+# VERSÃO 1.11: Tratamento de entrada. Evita hexadecimais impossíveis e sintaxe de comando.
 #
 # TODO: 
 #
